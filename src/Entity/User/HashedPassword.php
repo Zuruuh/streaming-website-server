@@ -13,10 +13,8 @@ use Stringable;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 #[Embeddable]
-class HashedPassword implements Stringable
+final class HashedPassword implements Stringable
 {
-
-
     #[Column(type: Types::STRING, length: 4096)]
     private string $password;
 

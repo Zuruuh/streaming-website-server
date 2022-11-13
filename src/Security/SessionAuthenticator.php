@@ -4,7 +4,7 @@ namespace App\Security;
 
 use App\Controller\ErrorController;
 use App\Entity\User;
-use App\Security\Contract\UserFinderByIdQueryInterface;
+use App\Security\Contract\Query\FindUserByIdQueryInterface;
 use Predis\Client as Redis;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,10 +22,10 @@ class SessionAuthenticator extends AbstractAuthenticator
     private const SESS_COOKIE = 'sessid';
 
     public function __construct(
-        private readonly Redis                        $redis,
+        private readonly Redis                      $redis,
 //        private readonly LoggerInterface $logger,
-        private readonly UserFinderByIdQueryInterface $userFinder,
-        private readonly ErrorController $errorController
+        private readonly FindUserByIdQueryInterface $userFinder,
+        private readonly ErrorController            $errorController
     ) {}
 
     public function supports(Request $request): ?bool

@@ -12,7 +12,6 @@ class Show
 {
     #[ORM\Id]
     #[ORM\Column(type: 'ulid')]
-    #[ORM\GeneratedValue]
     private Ulid $id;
 
     public function __construct()

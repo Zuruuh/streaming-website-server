@@ -8,7 +8,7 @@ use Stringable;
 use Webmozart\Assert\Assert;
 use Webmozart\Assert\InvalidArgumentException;
 
-class PlainPassword implements Stringable
+final class PlainPassword implements Stringable
 {
     public const MIN_LENGTH = 4;
     public const MAX_LENGTH = 64;

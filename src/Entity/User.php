@@ -24,7 +24,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Id]
     #[ORM\Column(type: 'ulid')]
-    #[ORM\GeneratedValue]
     private Ulid $id;
 
     #[ORM\Embedded(class: Username::class, columnPrefix: false)]
@@ -54,6 +53,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->registeredAt = $clock->now();
     }
 
+    public function getId(): Ulid
+    {
+        return $this->id;
+    }
+
     public function getPassword(): string
     {
         return $this->password->__toString();
@@ -75,6 +79,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getUserIdentifier(): string
     {
         return $this->username->__toString();
+    }
+
+    public function getUsername(): Username
+    {
+        return $this->username;
     }
 
     public function getRegisteredAt(): DateTimeImmutable

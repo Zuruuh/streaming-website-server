@@ -2,29 +2,22 @@
 
 declare(strict_types=1);
 
-namespace App\Security\Query;
+namespace App\Security\Contract\Query;
 
 use App\Entity\User;
-use App\Security\Contract\UserFinderByIdQueryInterface;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Shared\Query\AbstractQuery;
 use Doctrine\ORM\NonUniqueResultException;
-use Psr\Log\LoggerInterface;
 
-final class UserFinderByIdQuery implements UserFinderByIdQueryInterface
+final class FindFindUserByIdQuery extends AbstractQuery implements FindUserByIdQueryInterface
 {
-    public function __construct(
-        private readonly EntityManagerInterface $em,
-        private readonly LoggerInterface $logger,
-    ) {}
-
     public function __invoke(string $id): ?User
     {
         $query = $this
             ->em
             ->createQueryBuilder()
-            ->select('u')
-            ->from(User::class, 'u')
-            ->where('u.id = :id')
+            ->select('user')
+            ->from(User::class, 'user')
+            ->where('user.id = :id')
             ->setParameter('id', $id)
             ->getQuery()
         ;

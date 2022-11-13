@@ -11,7 +11,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Webmozart\Assert\InvalidArgumentException;
+use InvalidArgumentException;
 
 final class ValueObjectType extends AbstractType
 {
@@ -19,9 +19,14 @@ final class ValueObjectType extends AbstractType
     {
         $builder->addEventListener(FormEvents::PRE_SUBMIT, function (PreSubmitEvent $event) use ($options) {
             $value = $event->getData();
+            $instantiator = $options['instantiator'];
 
             try {
-                $valueObject = new ($options['value_object'])($value);
+                if (is_callable($instantiator)) {
+                    $valueObject = $instantiator($value);
+                } else {
+                    $valueObject = new ($options['value_object'])($value);
+                }
             } catch (InvalidArgumentException $e) {
                 $error = new FormError($e->getMessage());
                 $event->getForm()->addError($error);
@@ -38,8 +43,11 @@ final class ValueObjectType extends AbstractType
         $resolver
             ->setDefaults([
                 'value_object' => null,
+                'instantiator' => null,
             ])
-            ->setAllowedValues('value_object', class_exists(...));
+            ->setAllowedValues('value_object', class_exists(...))
+            ->setAllowedValues('instantiator', [is_null(...), is_callable(...)])
+        ;
     }
 
     /**

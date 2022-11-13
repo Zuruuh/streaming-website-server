@@ -7,7 +7,7 @@ services:
         resource: '../src/'
         exclude:
             - '../src/DependencyInjection/'
-            - '../src/Entity/'
+            - '../src/Entity/*.php'
             - '../src/Kernel.php'
 
     App\Controller\ErrorController:
