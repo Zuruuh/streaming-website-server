@@ -1,0 +1,35 @@
+services:
+  database:
+    image: postgres:14-alpine3.16
+    environment:
+      POSTGRES_DB: app
+      POSTGRES_USER: symfony
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+
+  mailer:
+    image: schickling/mailcatcher
+    ports:
+      - "1025:1025"
+      - "1080:1080"
+
+  storage:
+    image: bitnami/minio:2022
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+
+  broker:
+    image: rabbitmq:3.11.3-management-alpine
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: password
+    ports:
+      - '8080:15672'
+      - '5672:5672'
+
+  store:
+    image: eqalpha/keydb:alpine_x86_64_v6.3.1
+    ports:
+      - '6379:6379'
