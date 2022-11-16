@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Kernel;
+use Symfony\Component\HttpKernel\KernelInterface;
 
-require_once dirname(__DIR__).'/vendor/autoload_runtime.php';
+require_once dirname(__DIR__) . '/vendor/autoload_runtime.php';
 
-return function (array $context) {
-    return new Kernel($context['APP_ENV'], (bool) $context['APP_DEBUG']);
-};
+return fn (array $context): KernelInterface =>
+    new Kernel($context['APP_ENV'], (bool) $context['APP_DEBUG']);

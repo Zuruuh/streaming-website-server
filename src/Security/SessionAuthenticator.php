@@ -14,6 +14,7 @@ use Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
+use Symfony\Component\Uid\Ulid;
 
 //use Psr\Log\LoggerInterface;
 
@@ -46,6 +47,7 @@ class SessionAuthenticator extends AbstractAuthenticator
     private function userLoader(string $token): ?User
     {
         $id = (string) $this->redis->get(self::SESS_COOKIE . ":$token");
+        $id = Ulid::fromBase32($id);
 
         return $this->userFinder->__invoke($id);
     }

@@ -20,8 +20,8 @@ final class PlainPassword implements Stringable
      */
     public function __construct(?string $value)
     {
-        Assert::string($value, 'validation.user.password.required');
-        Assert::lengthBetween($value, self::MIN_LENGTH, self::MAX_LENGTH, 'validation.user.password.length');
+        Assert::string($value, 'validators.user.password.required');
+        Assert::lengthBetween($value, self::MIN_LENGTH, self::MAX_LENGTH, 'validators.user.password.length');
 
         $this->plainPassword = $value;
     }

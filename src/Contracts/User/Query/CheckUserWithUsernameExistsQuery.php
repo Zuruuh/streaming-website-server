@@ -2,13 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Entity\User\Contracts\Query;
+namespace App\Contracts\User\Query;
 
 use App\Entity\User;
 use App\Entity\User\Username;
 use App\Shared\Query\AbstractQuery;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
+use Symfony\Component\VarDumper\VarDumper;
 
 final class CheckUserWithUsernameExistsQuery extends AbstractQuery implements CheckUserWithUsernameExistsQueryInterface
 {
@@ -28,7 +29,7 @@ final class CheckUserWithUsernameExistsQuery extends AbstractQuery implements Ch
             $count = $query->getSingleScalarResult();
             $count = is_numeric($count) ? (int) $count : 0;
         } catch (NoResultException|NonUniqueResultException) {
-            return false;
+            return true;
         }
 
         return (bool) $count;

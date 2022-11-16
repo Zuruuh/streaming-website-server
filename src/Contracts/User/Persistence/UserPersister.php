@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Entity\User\Contracts\Persistence;
+namespace App\Contracts\User\Persistence;
 
 use App\Entity\User;
 use App\Shared\Persistence\PersistenceException;

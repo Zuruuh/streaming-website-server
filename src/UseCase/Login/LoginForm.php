@@ -16,17 +16,17 @@ final class LoginForm extends AbstractType
         $builder
             ->add('username', options: [
                 'constraints' => [
-                    new NotBlank(message: 'validation.form.login.username.not_blank')
+                    new NotBlank(message: 'validators.form.login.username.not_blank')
                 ]
             ])
             ->add('password', options: [
                 'constraints' => [
-                    new NotBlank(message: 'validation.form.login.password.not_blank')
+                    new NotBlank(message: 'validators.form.login.password.not_blank')
                 ]
             ])
             ->addModelTransformer(
                 new FormToDTOTransformer(
-                    LoginDTO::class,
+                    LoginInputDTO::class,
                     ['plain_password' => 'password']
                 ))
         ;

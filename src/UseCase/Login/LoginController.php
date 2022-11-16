@@ -13,21 +13,24 @@ use Symfony\Component\Routing\Annotation\Route;
 
 final class LoginController extends AbstractController
 {
+    public function __construct(
+        private readonly FormRenderer $renderer
+    ) {}
+
     #[Route(path: '/auth/login', name: 'app.auth.login', methods: 'POST')]
-    public function __invoke(Request $request, FormRenderer $renderer): Response
+    public function __invoke(Request $request): Response
     {
         $form = $this->createForm(LoginForm::class)
             ->submit($request->request->all());
 
         if (!$form->isValid()) {
-            return new JsonResponse($renderer($form));
+            return new JsonResponse($this->renderer->__invoke($form));
         }
 
         /**
-         * @var LoginDTO $loginDTO
+         * @var LoginInputDTO $loginDTO
          */
         $loginDTO = $form->getData();
-        dump($loginDTO);
 
         return new JsonResponse($loginDTO);
     }

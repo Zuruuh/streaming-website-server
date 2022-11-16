@@ -7,7 +7,7 @@ namespace App\UseCase\Register;
 use App\Entity\User\PlainPassword;
 use App\Entity\User\Username;
 
-final class RegisterDTO
+final class RegisterInputDTO
 {
     public function __construct(
         public readonly Username $username,

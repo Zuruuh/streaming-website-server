@@ -24,6 +24,7 @@ final class FormRenderer
      */
     private function renderRecursive(FormInterface $form, array &$data): array
     {
+        $data['errors'] = [];
         foreach ($form->getErrors() as $error) {
             $data['errors'][] = $error->getMessage();
         }

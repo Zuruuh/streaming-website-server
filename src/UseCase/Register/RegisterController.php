@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\UseCase\Register;
 
+use App\Contracts\User\Persistence\UserPersisterInterface;
 use App\Entity\User;
-use App\Entity\User\Contracts\Persistence\UserPersisterInterface;
 use App\Shared\Form\FormRenderer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Clock\ClockInterface;
@@ -17,35 +17,36 @@ use Symfony\Component\Routing\Annotation\Route;
 
 final class RegisterController extends AbstractController
 {
+    public function __construct(
+        private readonly FormRenderer $renderer,
+        private readonly ClockInterface $clock,
+        private readonly UserPasswordHasherInterface $hasher,
+        private readonly UserPersisterInterface $userPersister,
+    ) {}
+
     #[Route(path: '/auth/register', name: 'app.auth.register', methods: 'POST')]
-    public function __invoke(
-        Request $request,
-        FormRenderer $renderer,
-        ClockInterface $clock,
-        UserPasswordHasherInterface $hasher,
-        UserPersisterInterface $userPersister,
-    ): Response {
+    public function __invoke(Request $request): Response {
         $form = $this->createForm(RegisterForm::class)
             ->submit($request->request->all());
 
         if (!$form->isValid()) {
-            return new JsonResponse($renderer($form));
+            return new JsonResponse($this->renderer->__invoke($form));
         }
 
         /**
-         * @var RegisterDTO $registrationDTO
+         * @var RegisterInputDTO $registrationDTO
          */
         $registrationDTO = $form->getData();
 
         $user = new User(
             $registrationDTO->username,
             $registrationDTO->plainPassword,
-            $hasher,
-            $clock,
+            $this->hasher,
+            $this->clock,
         );
 
-        $userPersister->save($user);
+        $this->userPersister->save($user);
 
-        return new JsonResponse(new RegisterOutput($user));
+        return new JsonResponse(new RegisterOutputDTO($user));
     }
 }

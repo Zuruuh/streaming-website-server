@@ -6,7 +6,7 @@ namespace App\UseCase\Register;
 
 use App\Entity\User;
 
-final class RegisterOutput
+final class RegisterOutputDTO
 {
     public readonly string $id;
     public readonly string $username;

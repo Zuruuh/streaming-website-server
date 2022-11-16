@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Entity\User;
 
-use App\Entity\User\Contracts\Query\CheckUserWithUsernameExistsQueryInterface;
+use App\Contracts\User\Query\CheckUserWithUsernameExistsQueryInterface;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Embeddable;
+use InvalidArgumentException;
 use Stringable;
 use Webmozart\Assert\Assert;
-use InvalidArgumentException;
 
 #[Embeddable]
 final class Username implements Stringable
@@ -27,15 +27,15 @@ final class Username implements Stringable
      */
     public function __construct(?string $username, CheckUserWithUsernameExistsQueryInterface $query)
     {
-        Assert::string($username, 'validation.user.username.required');
-        Assert::lengthBetween($username, self::MIN_LENGTH, self::MAX_LENGTH, 'validation.user.username.length');
-        Assert::regex($username, self::REGEX, 'validation.user.username.regex');
+        Assert::string($username, 'validators.user.username.required');
+        Assert::lengthBetween($username, self::MIN_LENGTH, self::MAX_LENGTH, 'validators.user.username.length');
+        Assert::regex($username, self::REGEX, 'validators.user.username.regex');
 
         $this->username = $username;
 
         $alreadyInUse = $query($this);
         if ($alreadyInUse) {
-            throw new InvalidArgumentException('validation.user.username.already_in_use');
+            throw new InvalidArgumentException('validators.user.username.already_in_use');
         }
     }
 

@@ -7,10 +7,11 @@ namespace App\Security\Contract\Query;
 use App\Entity\User;
 use App\Shared\Query\AbstractQuery;
 use Doctrine\ORM\NonUniqueResultException;
+use Symfony\Component\Uid\Ulid;
 
-final class FindFindUserByIdQuery extends AbstractQuery implements FindUserByIdQueryInterface
+final class FindUserByIdQuery extends AbstractQuery implements FindUserByIdQueryInterface
 {
-    public function __invoke(string $id): ?User
+    public function __invoke(Ulid $id): ?User
     {
         $query = $this
             ->em
@@ -18,7 +19,7 @@ final class FindFindUserByIdQuery extends AbstractQuery implements FindUserByIdQ
             ->select('user')
             ->from(User::class, 'user')
             ->where('user.id = :id')
-            ->setParameter('id', $id)
+            ->setParameter('id', $id, 'ulid')
             ->getQuery()
         ;
 

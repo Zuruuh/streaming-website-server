@@ -8,6 +8,7 @@ use ReflectionClass;
 use ReflectionException;
 use ReflectionMethod;
 use Symfony\Component\Form\DataTransformerInterface;
+use Symfony\Component\VarDumper\VarDumper;
 use Throwable;
 use function Symfony\Component\String\u;
 
@@ -18,60 +19,55 @@ use function Symfony\Component\String\u;
 final class FormToDTOTransformer implements DataTransformerInterface
 {
     /**
-     * @param class-string<T>            $dtoClass
-     * @param array<string, string>      $propertiesMap
+     * @param class-string<T>       $dtoClass
+     * @param array<string, string> $propertyPathMap
      */
     public function __construct(
         private readonly string $dtoClass,
-        private readonly array  $propertiesMap = [],
+        private readonly array  $propertyPathMap = [],
     ) {}
 
     /**
      * @param array<string, mixed>|null $value
+     *
+     * @throws ReflectionException
      */
     public function reverseTransform(mixed $value): ?object
     {
-        try {
-            if (!is_array($value)) {
-                return null;
-            }
-
-            $parameters = [];
-
-            $class = (new ReflectionClass($this->dtoClass));
-            $constructor = $class->getConstructor();
-
-            if (!($constructor instanceof ReflectionMethod)) {
-                return new ($this->dtoClass)();
-            }
-
-            foreach ($constructor->getParameters() as $parameter) {
-                $parameterName = u($parameter->getName())->snake()->toString();
-                if (!array_key_exists($parameterName, $value)) {
-                    if (array_key_exists($parameterName, $this->propertiesMap)) {
-                        $parameters[$parameter->getPosition()] = $value[$this->propertiesMap[$parameterName]];
-                        continue;
-                    }
-
-                    if ($parameter->allowsNull()) {
-                        $parameters[$parameter->getPosition()] = null;
-                        continue;
-                    }
-
-                    return null;
-                }
-
-                $parameters[$parameter->getPosition()] = $value[$parameterName];
-            }
-
-            try {
-                return $class->newInstanceArgs($parameters);
-            } catch (Throwable) {
-                return null;
-            }
-        } catch (ReflectionException) {
+        if (!is_array($value)) {
             return null;
         }
+
+        $parameters = [];
+
+        $class = (new ReflectionClass($this->dtoClass));
+        $constructor = $class->getConstructor();
+
+        if (!($constructor instanceof ReflectionMethod)) {
+            return new ($this->dtoClass)();
+        }
+
+        foreach ($constructor->getParameters() as $parameter) {
+            $parameterName = u($parameter->getName())->snake()->toString();
+
+            if (!array_key_exists($parameterName, $value)) {
+                if (array_key_exists($parameterName, $this->propertyPathMap)) {
+                    $parameters[$parameter->getPosition()] = $value[$this->propertyPathMap[$parameterName]];
+                    continue;
+                }
+
+                if ($parameter->allowsNull()) {
+                    $parameters[$parameter->getPosition()] = null;
+                    continue;
+                }
+
+                return null;
+            }
+
+            $parameters[$parameter->getPosition()] = $value[$parameterName];
+        }
+
+        return $class->newInstanceArgs($parameters);
     }
 
     /**

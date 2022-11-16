@@ -7,11 +7,14 @@ services:
         resource: '../src/'
         exclude:
             - '../src/DependencyInjection/'
-            - '../src/Entity/*.php'
+            - '../src/Entity/'
             - '../src/Kernel.php'
 
     App\Controller\ErrorController:
         arguments: ['%kernel.environment%']
+
+    App\Shared\Service\ServiceInterface:
+        public: true
 
     Predis\Client:
         alias: 'snc_redis.default'
