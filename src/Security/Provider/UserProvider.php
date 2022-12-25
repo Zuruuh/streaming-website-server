@@ -4,26 +4,53 @@ declare(strict_types=1);
 
 namespace App\Security\Provider;
 
-use App\Security\Entity\User\Contract\Query\FindUserByUsernameQueryInterface;
-use App\Security\Entity\User\Username\Username;
+use App\Security\Entity\User;
+use App\Security\Entity\User\Contract\Query\FindUserByIdQueryInterface;
 use InvalidArgumentException;
-use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
+use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\UserProviderInterface;
+use Symfony\Component\Uid\Ulid;
 
-final class UserProvider implements UserLoaderInterface
+final readonly class UserProvider implements UserProviderInterface
 {
     public function __construct(
-        private readonly FindUserByUsernameQueryInterface $findUserByUsernameQuery,
+        private FindUserByIdQueryInterface $findUserByIdQuery,
     ) {}
 
-    public function loadUserByIdentifier(string $identifier): ?UserInterface
+    /**
+     * {@inheritdoc}
+     */
+    public function loadUserByIdentifier(string $identifier): UserInterface
     {
         try {
-            $username = new Username($identifier);
+            $id = Ulid::fromRfc4122($identifier);
         } catch (InvalidArgumentException) {
-            return null;
+            throw new UserNotFoundException();
         }
 
-        return $this->findUserByUsernameQuery->__invoke($username);
+        $user = $this->findUserByIdQuery->__invoke($id);
+
+        if ($user === null) {
+            throw new UserNotFoundException();
+        }
+
+        return $user;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function refreshUser(UserInterface $user): UserInterface
+    {
+        return $user;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function supportsClass(string $class): bool
+    {
+        return $class === User::class;
     }
 }

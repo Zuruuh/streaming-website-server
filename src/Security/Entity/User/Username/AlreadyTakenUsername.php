@@ -8,16 +8,19 @@ use App\Security\Entity\User;
 use App\Security\Entity\User\Contract\Query\FindUserByUsernameQueryInterface;
 use InvalidArgumentException;
 
-final class AlreadyTakenUsername implements UsernameInterface
+final readonly class AlreadyTakenUsername implements UsernameInterface
 {
     private string $username;
+    public User $user;
 
     public function __construct(Username $username, FindUserByUsernameQueryInterface $findUserByUsernameQuery)
     {
-        if (!($findUserByUsernameQuery($username) instanceof User)) {
+        $user = $findUserByUsernameQuery($username);
+        if (!($user instanceof User)) {
             throw new InvalidArgumentException('validators.user.username.not_in_use');
         }
 
+        $this->user = $user;
         $this->username = $username->__toString();
     }
 

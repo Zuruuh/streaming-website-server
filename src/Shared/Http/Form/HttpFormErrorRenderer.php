@@ -9,9 +9,9 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
-final class HttpFormErrorRenderer
+final readonly class HttpFormErrorRenderer
 {
-    public function __construct(private readonly FormErrorRenderer $formErrorRenderer) {}
+    public function __construct(private FormErrorRenderer $formErrorRenderer) {}
 
     public function render(FormInterface $form): Response
     {

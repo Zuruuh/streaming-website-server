@@ -5,14 +5,15 @@ declare(strict_types=1);
 namespace App\Security\Query;
 
 use App\Security\Entity\User;
-use App\Security\Entity\User\Contract\Query\FindUserByUsernameQueryInterface;
-use App\Security\Entity\User\Username\UsernameInterface;
+use App\Security\Entity\User\Contract\Query\FindUserByIdQueryInterface;
 use App\Shared\Query\AbstractQuery;
 use Doctrine\ORM\NonUniqueResultException;
+use Symfony\Bridge\Doctrine\Types\UlidType;
+use Symfony\Component\Uid\Ulid;
 
-final readonly class FindUserByUsernameQuery extends AbstractQuery implements FindUserByUsernameQueryInterface
+final readonly class FindUserByIdQuery extends AbstractQuery implements FindUserByIdQueryInterface
 {
-    public function __invoke(UsernameInterface $username): ?User
+    public function __invoke(Ulid $id): ?User
     {
         try {
             $user = $this
@@ -20,12 +21,13 @@ final readonly class FindUserByUsernameQuery extends AbstractQuery implements Fi
                 ->createQueryBuilder()
                 ->select('user')
                 ->from(User::class, 'user')
-                ->where('user.username.username = :username')
-                ->setParameter('username', $username)
+                ->where('user.ulid = :id')
+                ->setParameter('id', $id, UlidType::NAME)
                 ->getQuery()
                 ->setResultCacheLifetime(-1)
-                ->setResultCacheId(self::getQueryCacheId($username))
-                ->getOneOrNullResult();
+                ->setResultCacheId(self::getQueryCacheId($id))
+                ->getOneOrNullResult()
+            ;
         } catch (NonUniqueResultException $e) {
             $this->logger->critical($e->getMessage());
 
@@ -39,8 +41,8 @@ final readonly class FindUserByUsernameQuery extends AbstractQuery implements Fi
         return $user;
     }
 
-    public static function getQueryCacheId(UsernameInterface $username): string
+    public static function getQueryCacheId(Ulid $id): string
     {
-        return self::class . "#{$username->__toString()}";
+        return self::class . "#{$id->toRfc4122()}";
     }
 }

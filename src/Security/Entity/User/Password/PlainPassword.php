@@ -25,9 +25,14 @@ final class PlainPassword implements PasswordInterface
         $this->value = $plainPassword;
     }
 
-    public function hash(UserPasswordHasherInterface $passwordHasher, User $user): HashedPassword
+    public function hash(User $user, UserPasswordHasherInterface $passwordHasher): HashedPassword
     {
         return new HashedPassword($this, $passwordHasher, $user);
+    }
+
+    public function isValidForUser(User $user, UserPasswordHasherInterface $passwordHasher): bool
+    {
+        return $passwordHasher->isPasswordValid($user, $this->__toString());
     }
 
     public function __toString(): string

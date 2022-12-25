@@ -1,22 +1,28 @@
 security:
-    password_hashers:
-        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'sodium'
-    providers:
-        user_provider:
-            id: App\Security\Provider\UserProvider
-    firewalls:
-        dev:
-            pattern: ^/(_(profiler|wdt)|css|images|js)/
-            security: false
-        main:
-            lazy: true
-            provider: user_provider
+  password_hashers:
+    Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'sodium'
+  providers:
+    user_provider:
+      id: App\Security\Provider\UserProvider
 
-    access_control:
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+  firewalls:
+    dev:
+      pattern: ^/(_(profiler|wdt)|css|images|js)/
+      security: false
+    auth:
+      pattern: ^/auth/(register|login)$
+      security: false
+    main:
+      lazy: true
+      provider: user_provider
+      stateless: true
+      security: true
+      access_token:
+        token_handler: App\Security\Token\Handler\AuthTokenHandler
+        token_extractors: [ App\Security\Token\Extractor\AuthTokenExtractor ]
+        failure_handler: App\Security\Token\Handler\AuthFailureHandler
 
 when@test:
-    security:
-        password_hashers:
-            Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'plaintext'
+  security:
+    password_hashers:
+      Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'plaintext'

@@ -2,12 +2,18 @@ services:
     _defaults:
         autowire: true
         autoconfigure: true
+        bind:
+            $doctrineResultCachePool: '@doctrine.result_cache_pool'
+            $kernelEnv: '%kernel.environment%'
 
     App\:
         resource: '../src/'
         exclude:
             - '../src/**/Entity/'
             - '../src/Kernel.php'
+
+    Predis\Client:
+        alias: 'snc_redis.default'
 
     _instanceof:
         App\Shared\Http\ControllerInterface:

@@ -6,15 +6,15 @@ namespace App\Security\UseCase\Login;
 
 use App\Security\Entity\User;
 
-final class LoginOutputDTO
+final readonly class LoginOutputDTO
 {
-    public readonly string $id;
-    public readonly string $username;
+    public string $id;
+    public string $username;
 
     /**
      * @var string[] $roles
      */
-    public readonly array $roles;
+    public array $roles;
 
     public function __construct(User $user) {
         $this->id = $user->getId()->toRfc4122();

@@ -7,10 +7,10 @@ namespace App\Shared\Query;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 
-abstract class AbstractQuery
+abstract readonly class AbstractQuery
 {
     public function __construct(
-        protected readonly EntityManagerInterface $em,
-        protected readonly LoggerInterface $logger,
+        protected EntityManagerInterface $em,
+        protected LoggerInterface $logger,
     ) {}
 }

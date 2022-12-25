@@ -6,6 +6,7 @@ namespace App\Shared\Form;
 
 use InvalidArgumentException;
 use ReflectionClass;
+use ReflectionException;
 use ReflectionMethod;
 use Symfony\Component\Form\DataTransformerInterface;
 use Throwable;
@@ -16,16 +17,22 @@ use function Symfony\Component\String\u;
  *
  * @implements DataTransformerInterface<mixed, mixed>
  */
-final class ArrayToDTOTransformer implements DataTransformerInterface
+final readonly class ArrayToDTOTransformer implements DataTransformerInterface
 {
     /**
      * @param class-string<T>       $dtoClass
      * @param array<string, string> $propertyPathMap
      */
     public function __construct(
-        private readonly string $dtoClass,
-        private readonly array $propertyPathMap = [],
-    ) {}
+        private string $dtoClass,
+        private array  $propertyPathMap = [],
+    ) {
+        if (!class_exists($this->dtoClass)) {
+            throw new InvalidArgumentException(
+                "Could not find class $this->dtoClass. Please recheck your config."
+            );
+        }
+    }
 
     public function transform(mixed $value): mixed
     {
@@ -40,6 +47,7 @@ final class ArrayToDTOTransformer implements DataTransformerInterface
 
         $parameters = [];
 
+        // This will never throw since class_exists is checked in constructor
         $class = new ReflectionClass($this->dtoClass);
         $constructor = $class->getConstructor();
 
@@ -72,7 +80,7 @@ final class ArrayToDTOTransformer implements DataTransformerInterface
 
         try {
             return $class->newInstanceArgs($parameters);
-        } catch (Throwable $e) {
+        } catch (Throwable) {
             return null;
         }
     }

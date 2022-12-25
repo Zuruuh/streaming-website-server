@@ -15,17 +15,17 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
-final class RegisterController implements ControllerInterface
+final readonly class RegisterController implements ControllerInterface
 {
     private const ROUTE_PATH = '/auth/register';
     public const ROUTE_NAME = 'app.auth.register';
 
     public function __construct(
-        private readonly FormFactoryInterface $formFactory,
-        private readonly HttpFormErrorRenderer $httpFormErrorRenderer,
-        private readonly UserPersisterInterface $userPersister,
-        private readonly UserPasswordHasherInterface $passwordHasher,
-        private readonly ClockInterface $clock,
+        private FormFactoryInterface $formFactory,
+        private HttpFormErrorRenderer $httpFormErrorRenderer,
+        private UserPersisterInterface $userPersister,
+        private UserPasswordHasherInterface $passwordHasher,
+        private ClockInterface $clock,
     ) {}
 
     #[Route(path: self::ROUTE_PATH, name: self::ROUTE_NAME, methods: Request::METHOD_POST)]

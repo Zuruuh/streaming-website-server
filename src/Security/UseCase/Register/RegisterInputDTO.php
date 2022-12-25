@@ -10,11 +10,11 @@ use App\Security\Entity\User\Username\UniqueUsername;
 use Symfony\Component\Clock\ClockInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-final class RegisterInputDTO
+final readonly class RegisterInputDTO
 {
     public function __construct(
-        public readonly UniqueUsername $username,
-        public readonly PlainPassword  $plainPassword,
+        public UniqueUsername $username,
+        public PlainPassword  $plainPassword,
     ) {}
 
     public function toUser(

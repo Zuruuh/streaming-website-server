@@ -7,11 +7,11 @@ namespace App\Security\UseCase\Register;
 use App\Security\Entity\User;
 use DateTimeInterface;
 
-final class RegisterOutputDTO
+final readonly class RegisterOutputDTO
 {
-    public readonly string $id;
-    public readonly string $username;
-    public readonly string $registeredAt;
+    public string $id;
+    public string $username;
+    public string $registeredAt;
 
     public function __construct(User $user)
     {

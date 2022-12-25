@@ -6,7 +6,7 @@ namespace App\Shared\Form;
 
 use Symfony\Component\Form\FormInterface;
 
-final class FormErrorRenderer
+final readonly class FormErrorRenderer
 {
     /**
      * @phpstan-return array<string, string|array<array-key, string|array<array-key, string>>>
