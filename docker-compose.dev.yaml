@@ -15,6 +15,12 @@ services:
     ports:
       - "5432:5432"
 
+  mailer:
+    image: schickling/mailcatcher:latest
+    ports:
+      - "1025:1025"
+      - "1080:1080"
+
   store:
     image: eqalpha/keydb:alpine_x86_64_v6.3.1
     ports:

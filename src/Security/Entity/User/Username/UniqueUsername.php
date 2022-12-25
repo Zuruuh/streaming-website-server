@@ -17,10 +17,13 @@ final class UniqueUsername implements UsernameInterface
     #[Column(name: 'username', type: Types::STRING, length: self::MAX_LENGTH, unique: true, nullable: false)]
     private string $username;
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function __construct(Username $username, FindUserByUsernameQueryInterface $findUserByUsernameQuery)
     {
         if ($findUserByUsernameQuery($username) instanceof User) {
-            throw new InvalidArgumentException('validators.user.username.already_taken');
+            throw new InvalidArgumentException(self::ALREADY_TAKEN_MESSAGE);
         }
 
         $this->username = $username->__toString();

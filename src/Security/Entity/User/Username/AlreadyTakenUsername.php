@@ -13,11 +13,15 @@ final readonly class AlreadyTakenUsername implements UsernameInterface
     private string $username;
     public User $user;
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function __construct(Username $username, FindUserByUsernameQueryInterface $findUserByUsernameQuery)
     {
         $user = $findUserByUsernameQuery($username);
+
         if (!($user instanceof User)) {
-            throw new InvalidArgumentException('validators.user.username.not_in_use');
+            throw new InvalidArgumentException(self::NOT_IN_USE_MESSAGE);
         }
 
         $this->user = $user;

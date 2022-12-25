@@ -8,7 +8,7 @@ use App\Security\Entity\User\Contract\Query\FindUserByUsernameQueryInterface;
 use InvalidArgumentException;
 use Webmozart\Assert\Assert;
 
-final class Username implements UsernameInterface
+final readonly class Username implements UsernameInterface
 {
     private string $username;
 
@@ -17,10 +17,10 @@ final class Username implements UsernameInterface
      */
     public function __construct(?string $username)
     {
-        Assert::string($username, 'validators.user.username.required');
-        Assert::notWhitespaceOnly($username, 'validators.user.username.required');
-        Assert::lengthBetween($username, self::MIN_LENGTH, self::MAX_LENGTH, 'validators.user.username.length');
-        Assert::regex($username, self::PATTERN, 'validators.user.username.pattern');
+        Assert::string($username, self::REQUIRED_MESSAGE);
+        Assert::notWhitespaceOnly($username, self::REQUIRED_MESSAGE);
+        Assert::lengthBetween($username, self::MIN_LENGTH, self::MAX_LENGTH, self::LENGTH_MESSAGE);
+        Assert::regex($username, self::PATTERN, self::PATTERN_MESSAGE);
 
         $this->username = $username;
     }

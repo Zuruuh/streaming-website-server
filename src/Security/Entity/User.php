@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Security\Entity;
 
+use App\Security\Entity\User\Email\UniqueEmail;
 use App\Security\Entity\User\Password\HashedPassword;
 use App\Security\Entity\User\Password\InvalidPasswordException;
 use App\Security\Entity\User\Password\PlainPassword;
@@ -33,11 +34,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public const ROLE_USER = 'ROLE_USER';
 
     #[Id]
-    #[Column(name: 'ulid', type: UlidType::NAME, unique: true, updatable: false)]
+    #[Column(name: 'ulid', type: UlidType::NAME, unique: true, nullable: false, updatable: false)]
     private readonly Ulid $ulid;
 
     #[Embedded(class: UniqueUsername::class, columnPrefix: false)]
     private UniqueUsername $username;
+
+    #[Embedded(class: UniqueEmail::class, columnPrefix: false)]
+    private UniqueEmail $email;
 
     #[Embedded(class: HashedPassword::class, columnPrefix: false)]
     private HashedPassword $password;
@@ -53,12 +57,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function __construct(
         UniqueUsername $username,
+        UniqueEmail $email,
         PlainPassword $password,
         UserPasswordHasherInterface $userPasswordHasher,
         ClockInterface $clock,
     ) {
         $this->ulid = new Ulid();
         $this->username = $username;
+        $this->email = $email;
         $this->password = $password->hash($this, $userPasswordHasher);
         $this->registeredAt = $clock->now();
     }
@@ -86,6 +92,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     // Getters
+    // If possible, these methods should be used outside of class context ONLY for presentation
 
     public function getId(): Ulid
     {
@@ -95,6 +102,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getUsername(): UniqueUsername
     {
         return $this->username;
+    }
+
+    public function getEmail(): UniqueEmail
+    {
+        return $this->email;
     }
 
     public function getPassword(): ?string

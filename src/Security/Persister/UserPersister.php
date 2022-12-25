@@ -6,6 +6,7 @@ namespace App\Security\Persister;
 
 use App\Security\Entity\User;
 use App\Security\Entity\User\Contract\Persister\UserPersisterInterface;
+use App\Security\Entity\User\Contract\Query\FindUserByEmailQueryInterface;
 use App\Security\Entity\User\Contract\Query\FindUserByUsernameQueryInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Cache\CacheItemPoolInterface;
@@ -16,6 +17,7 @@ final readonly class UserPersister implements UserPersisterInterface
         private EntityManagerInterface           $em,
         private CacheItemPoolInterface           $doctrineResultCachePool,
         private FindUserByUsernameQueryInterface $findUserByUsernameQuery,
+        private FindUserByEmailQueryInterface    $findUserByEmailQuery,
     ) {}
 
     public function save(User $user): void
@@ -28,8 +30,13 @@ final readonly class UserPersister implements UserPersisterInterface
 
     private function clearCacheEntry(User $user): void
     {
-        $queryCacheId = $this->findUserByUsernameQuery::getQueryCacheId($user->getUsername());
+        $queryCacheIds = [
+            $this->findUserByUsernameQuery::getQueryCacheId($user->getUsername()),
+            $this->findUserByEmailQuery::getQueryCacheId($user->getEmail()),
+        ];
 
-        $this->doctrineResultCachePool->deleteItem($queryCacheId);
+        foreach ($queryCacheIds as $queryCacheId) {
+            $this->doctrineResultCachePool->deleteItem($queryCacheId);
+        }
     }
 }
