@@ -7,9 +7,9 @@ namespace App\Security\UseCase\Register;
 use App\Security\Entity\User\Contract\Persister\UserPersisterInterface;
 use App\Shared\Http\ControllerInterface;
 use App\Shared\Http\Form\HttpFormErrorRenderer;
+use App\Shared\Http\HttpJsonSerializer;
 use Symfony\Component\Clock\ClockInterface;
 use Symfony\Component\Form\FormFactoryInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -21,11 +21,12 @@ final readonly class RegisterController implements ControllerInterface
     public const ROUTE_NAME = 'app.auth.register';
 
     public function __construct(
-        private FormFactoryInterface $formFactory,
-        private HttpFormErrorRenderer $httpFormErrorRenderer,
-        private UserPersisterInterface $userPersister,
+        private FormFactoryInterface        $formFactory,
+        private HttpFormErrorRenderer       $httpFormErrorRenderer,
+        private HttpJsonSerializer          $httpJsonSerializer,
+        private UserPersisterInterface      $userPersister,
         private UserPasswordHasherInterface $passwordHasher,
-        private ClockInterface $clock,
+        private ClockInterface              $clock,
     ) {}
 
     #[Route(path: self::ROUTE_PATH, name: self::ROUTE_NAME, methods: Request::METHOD_POST)]
@@ -46,6 +47,6 @@ final readonly class RegisterController implements ControllerInterface
 
         $this->userPersister->save($user);
 
-        return new JsonResponse(new RegisterOutputDTO($user));
+        return $this->httpJsonSerializer->serialize(new RegisterOutputDTO($user));
     }
 }

@@ -5,7 +5,14 @@ install:
 	$(DOCKER_COMPOSE) pull
 
 start:
-	$(DOCKER_COMPOSE) -f ./docker-compose.dev.yaml up -d
+	$(DOCKER_COMPOSE) up -d
+	sleep 4
 	echo "yes" | bin/console doctrine:migrations:migrate latest
 	# bin/console doctrine:fixtures:load -y
 	symfony serve -d
+
+stop:
+	$(DOCKER_COMPOSE) down -v
+	symfony server:stop
+
+restart: stop start

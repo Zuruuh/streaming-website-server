@@ -10,10 +10,10 @@ use App\Security\Token\Generator\AuthTokenGeneratorInterface;
 use App\Security\Token\Persister\AuthTokenPersisterInterface;
 use App\Shared\Http\ControllerInterface;
 use App\Shared\Http\Form\HttpFormErrorRenderer;
+use App\Shared\Http\HttpJsonSerializer;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
@@ -26,6 +26,7 @@ final readonly class LoginController implements ControllerInterface
     public function __construct(
         private FormFactoryInterface        $formFactory,
         private HttpFormErrorRenderer       $httpFormErrorRenderer,
+        private HttpJsonSerializer          $httpJsonSerializer,
         private UserPasswordHasherInterface $userPasswordHasher,
         private AuthTokenGeneratorInterface $authTokenGenerator,
         private AuthTokenPersisterInterface $authTokenPersister,
@@ -60,11 +61,8 @@ final readonly class LoginController implements ControllerInterface
             return $this->httpFormErrorRenderer->render($form);
         }
 
-        return $this->httpAuthTokenPersister->__invoke(
-            $token,
-            new JsonResponse(
-                new LoginOutputDTO($dto->username->user)
-            )
-        );
+        $response = $this->httpJsonSerializer->serialize(new LoginOutputDTO($dto->username->user));
+
+        return $this->httpAuthTokenPersister->__invoke($token, $response);
     }
 }

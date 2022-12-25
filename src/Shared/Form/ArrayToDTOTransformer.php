@@ -13,6 +13,8 @@ use Throwable;
 use function Symfony\Component\String\u;
 
 /**
+ * @todo Use symfony serializer denormalization instead
+ *
  * @template T of object
  *
  * @implements DataTransformerInterface<mixed, mixed>
