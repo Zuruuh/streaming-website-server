@@ -5,8 +5,7 @@ install:
 	$(DOCKER_COMPOSE) pull
 
 start:
-	$(DOCKER_COMPOSE) up -d
-	sleep 4
+	$(DOCKER_COMPOSE) up -d --wait
 	echo "yes" | bin/console doctrine:migrations:migrate latest
 	# bin/console doctrine:fixtures:load -y
 	symfony serve -d
